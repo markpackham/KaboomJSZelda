@@ -143,6 +143,32 @@ scene("game", ({ level, score }) => {
     player.move(0, MOVE_SPEED);
     player.dir = vec2(0, 1);
   });
+
+  // enemy movement
+  action("skeletor", (s) => {
+    s.move(0, s.dir * SKELETOR_SPEED);
+    s.timer -= dt();
+    if (s.timer <= 0) {
+      s.dir = -s.dir;
+      s.timer = rand(5);
+    }
+  });
+
+  action("slicer", (s) => {
+    s.move(s.dir * SLICER_SPEED, 0);
+  });
+
+  collides("dangerous", "wall", (s) => {
+    s.dir = -s.dir;
+  });
+
+  player.overlaps("dangerous", () => {
+    go("lose", { score: scoreLabel.value });
+  });
+});
+
+scene("lose", ({ score }) => {
+  add([text(score, 32), origin("center"), pos(width() / 2, height() / 2)]);
 });
 
 start("game", { level: 0, score: 0 });
