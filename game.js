@@ -35,6 +35,68 @@ loadSprite("kaboom", "o9WizfI.png");
 loadSprite("stairs", "VghkL08.png");
 loadSprite("bg", "u4DVsx6.png");
 
-scene("game", () => {});
+scene("game", ({ level, score }) => {
+  layers(["bg", "obj", "ui"], "obj");
 
-start("game");
+  const map = [
+    "ycc)cc^ccw",
+    "a        b",
+    "a      * b",
+    "a    (   b",
+    "%        b",
+    "a    (   b",
+    "a   *    b",
+    "a        b",
+    "xdd)dd)ddz",
+  ];
+
+  const levelCfg = {
+    width: 48,
+    height: 48,
+    a: [sprite("left-wall"), solid(), "wall"],
+    b: [sprite("right-wall"), solid(), "wall"],
+    c: [sprite("top-wall"), solid(), "wall"],
+    d: [sprite("bottom-wall"), solid(), "wall"],
+    w: [sprite("top-right-wall"), solid(), "wall"],
+    x: [sprite("bottom-left-wall"), solid(), "wall"],
+    y: [sprite("top-left-wall"), solid(), "wall"],
+    z: [sprite("bottom-right-wall"), solid(), "wall"],
+    "%": [sprite("left-door"), solid(), "door"],
+    "^": [sprite("top-door"), "next-level"],
+    $: [sprite("stairs"), "next-level"],
+    "*": [sprite("slicer"), "slicer", { dir: -1 }, "dangerous"],
+    "}": [sprite("skeletor"), "dangerous", "skeletor", { dir: -1, timer: 0 }],
+    ")": [sprite("lanterns"), solid()],
+    "(": [sprite("fire-pot"), solid()],
+  };
+  addLevel(map, levelCfg);
+
+  add([sprite("bg"), layer("bg")]);
+
+  const scoreLabel = add([
+    text("0"),
+    pos(400, 450),
+    layer("ui"),
+    {
+      value: score,
+    },
+    scale(2),
+  ]);
+
+  add([text("level " + parseInt(level)), pos(400, 475), scale(2)]);
+
+  const player = add([
+    sprite("link-going-right"),
+    pos(5, 190),
+    {
+      // right by default
+      dir: vec2(1, 0),
+    },
+  ]);
+
+  player.action(() => {
+    player.resolve();
+  });
+});
+
+start("game", { level: 0, score: 0 });
