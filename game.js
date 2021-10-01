@@ -144,6 +144,31 @@ scene("game", ({ level, score }) => {
     player.dir = vec2(0, 1);
   });
 
+  function spawnKaboom(p) {
+    const obj = add([sprite("kaboom"), pos(p), "kaboom"]);
+    wait(1, () => {
+      destroy(obj);
+    });
+  }
+
+  // player.collides("door", (d) => {
+  //   destroy(d);
+  // });
+
+  collides("kaboom", "skeletor", (k, s) => {
+    camShake(4);
+    wait(1, () => {
+      destroy(k);
+    });
+    destroy(s);
+    scoreLabel.value++;
+    scoreLabel.text = scoreLabel.value;
+  });
+
+  keyPress("space", () => {
+    spawnKaboom(player.pos.add(player.dir.scale(48)));
+  });
+
   // enemy movement
   action("skeletor", (s) => {
     s.move(0, s.dir * SKELETOR_SPEED);
