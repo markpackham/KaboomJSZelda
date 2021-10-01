@@ -38,16 +38,29 @@ loadSprite("bg", "u4DVsx6.png");
 scene("game", ({ level, score }) => {
   layers(["bg", "obj", "ui"], "obj");
 
-  const map = [
-    "ycc)cc^ccw",
-    "a        b",
-    "a      * b",
-    "a    (   b",
-    "%        b",
-    "a    (   b",
-    "a   *    b",
-    "a        b",
-    "xdd)dd)ddz",
+  const maps = [
+    [
+      "ycc)cccccw",
+      "a    $   b",
+      "a      * b",
+      "a    (   b",
+      "a        b",
+      "a    (   b",
+      "a   *    b",
+      "a        b",
+      "xdd)dd)ddz",
+    ],
+    [
+      "yccccccccw",
+      "a        b",
+      ")        )",
+      "a        b",
+      "a        b",
+      "a    $   b",
+      ")   }    )",
+      "a        b",
+      "xddddddddz",
+    ],
   ];
 
   const levelCfg = {
@@ -69,7 +82,7 @@ scene("game", ({ level, score }) => {
     ")": [sprite("lanterns"), solid()],
     "(": [sprite("fire-pot"), solid()],
   };
-  addLevel(map, levelCfg);
+  addLevel(maps[level], levelCfg);
 
   add([sprite("bg"), layer("bg")]);
 
@@ -96,6 +109,39 @@ scene("game", ({ level, score }) => {
 
   player.action(() => {
     player.resolve();
+  });
+
+  // enter next level
+  player.overlaps("next-level", () => {
+    go("game", {
+      level: (level + 1) % maps.length,
+      score: scoreLabel.value,
+    });
+  });
+
+  // movement
+  keyDown("left", () => {
+    player.changeSprite("link-going-left");
+    player.move(-MOVE_SPEED, 0);
+    player.dir = vec2(-1, 0);
+  });
+
+  keyDown("right", () => {
+    player.changeSprite("link-going-right");
+    player.move(MOVE_SPEED, 0);
+    player.dir = vec2(1, 0);
+  });
+
+  keyDown("up", () => {
+    player.changeSprite("link-going-up");
+    player.move(0, -MOVE_SPEED);
+    player.dir = vec2(0, -1);
+  });
+
+  keyDown("down", () => {
+    player.changeSprite("link-going-down");
+    player.move(0, MOVE_SPEED);
+    player.dir = vec2(0, 1);
   });
 });
 
